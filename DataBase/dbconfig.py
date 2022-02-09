@@ -18,11 +18,11 @@ class Connection:
         parser.read(filename)
 
         if parser.has_section(section):
-            parameters = parser.read(section)
-            for i in parameters:
-                self.config[i[0]] = i[1]
+            parameters = parser.items(section)
+            self.config = dict(parameters)
         else:
             print("No parameters")
+
 
     def return_config(self):
         return self.config

@@ -7,7 +7,8 @@ from DataBase.query import get_all_movies, get_movie_by_id, add_movie, update_mo
 app = Flask(__name__)
 
 connection = Connection()
-connection.init("movie", "postgres", "tyshkanmc")
+#connection.init()
+connection.init_from_file()
 connection.connect()
 
 
