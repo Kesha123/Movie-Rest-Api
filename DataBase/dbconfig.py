@@ -23,7 +23,6 @@ class Connection:
         else:
             print("No parameters")
 
-
     def return_config(self):
         return self.config
 

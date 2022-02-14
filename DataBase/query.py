@@ -1,5 +1,5 @@
 def movie(params):
-    return f'{{"id":"{params[0]}", "title":"{params[1]}", "director":"{params[2]}", "year":{params[3]}}}'
+    return f'{{"id":{params[0]}, "title":"{params[1]}", "director":"{params[2]}", "year":{params[3]}}}'
 
 
 def get_all_movies(connection):
@@ -17,7 +17,7 @@ def get_all_movies(connection):
             body += movie(item)
 
     cursor.close()
-    return '{' + body + '}'
+    return '{"movies": [' + body + ']}'
 
 
 def get_movie_by_id(connection, id):
