@@ -22,7 +22,7 @@ def all_movies():
     elif request.method == "POST":
         return add_movie(connection.connection, request.json)
     else:
-        pass
+        return {"response": "Not valid http method for this route."}
 
 
 @app.route('/api.movies/<int:id>', methods=["DELETE", "GET", "PUT"])
@@ -34,7 +34,7 @@ def movie_by_id(id):
     elif request.method == "PUT":
         return update_movie(connection.connection, id, request.json)
     else:
-        pass
+        return {"response": "Not valid http method for this route"}
 
 
 @app.route('/movies')
@@ -51,12 +51,12 @@ def movie(id):
 
 @app.route('/user/login')
 def login():
-    pass
+    return render_template('login.html')
 
 
 @app.route('/user/signup')
 def sign_up():
-    pass
+    return render_template('signup.html')
 
 
 @app.route('/user/account')
