@@ -1,1 +1,6 @@
 database.ini
+Api.py
+Service.py
+venv/
+__pycache__/
+.idea/

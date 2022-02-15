@@ -1,4 +1,23 @@
 <!DOCTYPE html>
-<title>Movie</title>
-<h1>One movie</h1>
-{{ movie }}
+<head>
+    <title>Movies</title>
+    <link rel="stylesheet" type="text/css" href="../static/style.css">
+</head>
+
+<body>
+<table>
+
+    <tr>
+        <th>Title</th>
+        <th>Director</th>
+        <th>Year</th>
+    </tr>
+
+    <tr>
+        <th>{{ movie["title"] }}</th>
+        <th>{{ movie["director"] }}</th>
+        <th>{{ movie["year"] }}</th>
+    </tr>
+
+</table>
+</body>

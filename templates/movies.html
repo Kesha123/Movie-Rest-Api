@@ -1,8 +1,26 @@
 <!DOCTYPE html>
-<title>Movies</title>
+<head>
+    <title>Movies</title>
+    <link rel="stylesheet" type="text/css" href="../static/style.css">
+</head>
+
+<body>
 <h1>All movies</h1>
-<ul>
+<table>
+
+    <tr>
+        <th>Title</th>
+        <th>Director</th>
+        <th>Year</th>
+    </tr>
+
     {% for movie in movies %}
-        <li>{{ movie }}</li>
+    <tr>
+        <th>{{ movie["title"] }}</th>
+        <th>{{ movie["director"] }}</th>
+        <th>{{ movie["year"] }}</th>
+    </tr>
+
     {% endfor %}
-</ul>
+</table>
+</body>

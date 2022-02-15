@@ -1,13 +1,17 @@
 import json
 
-from flask import Flask
+from flask import Flask, render_template_string
+from flask import redirect
+from flask import url_for
 from flask import request
+from flask import session
 from flask import render_template
 
 from DataBase.dbconfig import Connection
 from DataBase.query import get_all_movies, get_movie_by_id, add_movie, update_movie, delete_movie_by_id
 
 app = Flask(__name__)
+app.secret_key = "12345"
 
 connection = Connection()
 #connection.init()
@@ -38,20 +42,26 @@ def movie_by_id(id):
 
 
 @app.route('/movies')
+@app.route('/movies/')
 def movies():
     movies = json.loads(get_all_movies(connection.connection))["movies"]
     return render_template('movies.html', movies=movies)
 
 
 @app.route('/movies/<int:id>')
+@app.route('/movies/<int:id>/')
 def movie(id):
     movie = json.loads(get_movie_by_id(connection.connection, id))
     return render_template('movie.html', movie=movie)
 
 
-@app.route('/user/login')
+@app.route('/user/login', methods=["GET", "POST"])
 def login():
-    return render_template('login.html')
+    if request.method == "POST":
+        session["email"] = request.form["email"]
+        return redirect(url_for('account'))
+    else:
+        return render_template('login.html')
 
 
 @app.route('/user/signup')
@@ -61,7 +71,16 @@ def sign_up():
 
 @app.route('/user/account')
 def account():
-    pass
+    if session["email"]:
+        return render_template('account.html')
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/user/logout', methods=["POST"])
+def logout():
+    session.pop("email", default=None)
+    return redirect(url_for('movies'))
 
 
 if __name__ == '__main__':
