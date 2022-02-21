@@ -1,6 +1,7 @@
 import json
+import datetime
 
-from flask import Flask, render_template_string
+from flask import Flask
 from flask import redirect
 from flask import url_for
 from flask import request
@@ -8,10 +9,12 @@ from flask import session
 from flask import render_template
 
 from DataBase.dbconfig import Connection
-from DataBase.query import get_all_movies, get_movie_by_id, add_movie, update_movie, delete_movie_by_id
+from DataBase.query import get_all_movies, get_movie_by_id, add_movie, update_movie, delete_movie_by_id, validate_user, \
+    register_user
 
 app = Flask(__name__)
 app.secret_key = "12345"
+app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(minutes=2)
 
 connection = Connection()
 #connection.init()
@@ -41,37 +44,62 @@ def movie_by_id(id):
         return {"response": "Not valid http method for this route"}
 
 
-@app.route('/movies')
-@app.route('/movies/')
+@app.route('/')
+def home():
+    return render_template('homepage.html')
+
+
+@app.route('/movies',methods=["GET", "POST"])
+@app.route('/movies/', methods=["GET", "POST"])
 def movies():
     movies = json.loads(get_all_movies(connection.connection))["movies"]
     return render_template('movies.html', movies=movies)
 
 
-@app.route('/movies/<int:id>')
-@app.route('/movies/<int:id>/')
+@app.route('/movies/<int:id>', methods=["GET", "POST"])
+@app.route('/movies/<int:id>/', methods=["GET", "POST"])
 def movie(id):
-    movie = json.loads(get_movie_by_id(connection.connection, id))
-    return render_template('movie.html', movie=movie)
+    movies = [json.loads(get_movie_by_id(connection.connection, id))]
+    return render_template('movies.html', movies=movies)
 
 
 @app.route('/user/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        session["email"] = request.form["email"]
-        return redirect(url_for('account'))
+        email = request.form["email"]
+        password = request.form["password"]
+        user = validate_user(connection.connection, email, password)
+
+        if user is not None:
+            session["User account"] = request.form["email"]
+            return redirect(url_for('account'))
+        else:
+            return render_template('login.html')
     else:
         return render_template('login.html')
 
 
-@app.route('/user/signup')
-def sign_up():
-    return render_template('signup.html')
+@app.route('/user/signup', methods=["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        email = request.form["email"]
+        password = request.form["password"]
+        user = register_user(connection.connection, email, password)
+
+        if user:
+            print("User has been registered")
+        else:
+            print("User already exist")
+
+        return redirect(url_for('login'))
+    else:
+        return render_template('signup.html')
 
 
-@app.route('/user/account')
+@app.route('/user/account', methods=["POST", "GET"])
 def account():
-    if session["email"]:
+    if session.get("User account"):
+        print(session)
         return render_template('account.html')
     else:
         return redirect(url_for('login'))
@@ -79,7 +107,7 @@ def account():
 
 @app.route('/user/logout', methods=["POST"])
 def logout():
-    session.pop("email", default=None)
+    session.pop("User account", default=None)
     return redirect(url_for('movies'))
 
 

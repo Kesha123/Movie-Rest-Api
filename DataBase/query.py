@@ -53,10 +53,44 @@ def update_movie(connection, id, body):
 
 
 def delete_movie_by_id(connection, id):
-    query = f"DELETE FROM movies WHERE id={id}"
+    query = f"DELETE FROM movies WHERE id={id};"
 
     cursor = connection.cursor()
     cursor.execute(query)
     cursor.close()
 
     return "Deleted successfully"
+
+
+def validate_user(connection, email, password):
+    query = f"SELECT * FROM users WHERE (email='{email}' AND password='{password}');"
+    cursor = connection.cursor()
+    cursor.execute(query)
+    user = cursor.fetchone()
+
+    cursor.close()
+    return user
+
+
+def user_exist(connection, email):
+    query = f"SELECT * FROM users WHERE email='{email}';"
+    cursor = connection.cursor()
+    cursor.execute(query)
+    user = cursor.fetchone()
+    cursor.close()
+
+    if user is not None:
+        return True
+    else:
+        return False
+
+
+def register_user(connection, email, password):
+    if not user_exist(connection, email):
+        query = f"INSERT INTO users (email, password) VALUES ('{email}','{password}');"
+        cursor = connection.cursor()
+        cursor.execute(query)
+        cursor.close()
+        return True
+    else:
+        return False
